@@ -23,11 +23,9 @@
       zero
       (succ (to-numeral (- n 1)))))
 
-(define plus
-  (lambda (n m)
-      (if (= (from-numeral m) 0)
-          n
-          (plus (succ n) (to-numeral (-(from-numeral m) 1))))))
+(define (plus n m)
+  (lambda (f v)
+      (m f (n f v))))
 
 (define mult
   (lambda (m n)
