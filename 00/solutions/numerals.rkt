@@ -27,13 +27,23 @@
   (lambda (f v)
       (m f (n f v))))
 
-(define mult
-  (lambda (m n)
-    (to-numeral (* (from-numeral n)
-                   (from-numeral m)))))
+(define (mult m n)
+  (m (lambda (v)
+       (plus n v)) zero))
 
-(define pred
-  (lambda (n)
-    (if (equal? n zero)
-        zero
-        (to-numeral (-(from-numeral n) 1)))))
+(define (pred m)
+  (lambda (f v)
+    (lambda (n)
+      (if (equal? m zero)
+          zero
+          (if (= (m f v) ((plus n (succ zero))f v))
+              n
+              (succ n))))
+    zero))
+
+            
+            
+
+         (define (helper n)
+  (from-numeral (pred n)))
+        
