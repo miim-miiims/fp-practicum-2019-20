@@ -18,10 +18,7 @@
 
 ; 00.
 (define (all? p? xs)
-  (if (null? xs)
-      #t
-      (and (p? (car xs))
-           (all? p? (cdr xs)))))
+  (foldr (lambda(x y) (and x y)) #t (map p? xs)))
 
 ; 01.
 (define (any? p? xs)
@@ -36,14 +33,18 @@
 (define (rows xss) xss)
 
 ; 04.
+(define (first-lst xss) (map car xss))
+
+(define (rem-lst xss) (map cdr xss))
+
 (define (cols xss)
-  (apply map list xss))
+  (if(= 1 (length (car xss)))
+     (cons (first-lst xss) '())
+     (cons (first-lst xss) (cols (rem-lst xss)))))
 
 ; 05.
 (define (matrix-ref xss i j)
-  (cond ((null? xss) -1)
-        ((= i 0) (list-ref (car xss) j))
-        (else (matrix-ref (cdr xss) (- i 1) j))))
+  (list-ref (list-ref xss i) j))
 
 ; 06.
 (define (set xs i x)
@@ -54,51 +55,44 @@
 
 ; 07.
 (define (place xss i j x)
-   (if (null? xss)
-      '()
-      (cons (if (= i 0)
-                (set (car xss) j x)
-                (car xss))
-            (place (cdr xss) (- i 1) j x))))
-
+  (if (= i 0)
+      (cons (set (car xss) j x) (cdr xss))
+      (cons (car xss) (place (cdr xss) (- i 1) j x))))
+ 
 ; 08.
-(define (diag xss)
-  (define (helper n)
-    (if (= n (length (car xss)))
-        '()
-        (cons (matrix-ref xss n n)  (helper (+ n 1)))))
-  (helper 0))
+(define (frst-el xss) (car (car xss)))
 
+(define (rem-mtrx xss) (map cdr (cdr xss)))
+
+(define (diag xss)
+  (if (= 1 (length xss))
+      (cons (frst-el xss) '())
+      (cons (frst-el xss)
+            (diag (rem-mtrx xss)))))
+; 09.
 (define (flip xss)
   (if (null? xss)
       '()
       (cons (reverse (car xss)) (flip (cdr xss)))))
 
-; 09.
 (define (diags xss)
   (list (diag xss) (diag (flip xss))))
 
 ; 10.
 (define (map-matrix f xss)
-  (map (lambda(x) (map f x)) xss))
+  (map (lambda (x) (map f x)) xss))
 
 ; 11.
 (define (filter-matrix p? xss)
-  (map (lambda(x) (filter p? x)) xss))
+  (map (lambda (x) (filter p? x)) xss))
 
 ; 12.
 (define (zip-with f xs ys)
-  (define (helper n xs ys)
-    (if (= 0 (min (length xs) (length ys)))
+  (if (or (null? xs) (null? ys))
         '()
         (cons (f (car xs) (car ys))
-              (helper (+ n 1) (cdr xs) (cdr ys)))))
-  (helper 0 xs ys))
-
+              (zip-with f (cdr xs) (cdr ys)))))
+      
 ; 13.
 (define (zip-matrix xss yss)
-  (if (or (null? xss) (null? yss))
-      '()
-      (cons (zip-with cons (car xss) (car yss))
-            (zip-matrix (cdr xss) (cdr yss)))))
- 
+  (map (lambda (x y) (zip-with cons x y)) xss yss))
