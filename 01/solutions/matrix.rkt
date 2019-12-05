@@ -55,9 +55,7 @@
 
 ; 07.
 (define (place xss i j x)
-  (if (= i 0)
-      (cons (set (car xss) j x) (cdr xss))
-      (cons (car xss) (place (cdr xss) (- i 1) j x))))
+  (set xss i (set (list-ref xss i) j x)))
  
 ; 08.
 (define (frst-el xss) (car (car xss)))
