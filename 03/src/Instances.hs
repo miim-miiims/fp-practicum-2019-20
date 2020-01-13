@@ -13,7 +13,7 @@ newtype Pointwise a b = Pointwise {getPointwise :: (a, b)}
 
 instance (Ord a, Ord b) => Ord (Pointwise a b) where
   (<=) :: Pointwise a b -> Pointwise a b -> Bool
-  (<=) = undefined
+  (<=) (Pointwise (x, y)) (Pointwise(s, t)) = x <= s && y <= t
 
 newtype Lexicographic a b = Lexicographic {getLexicographic :: (a, b)}
   deriving (Show, Eq)
@@ -21,13 +21,15 @@ newtype Lexicographic a b = Lexicographic {getLexicographic :: (a, b)}
 -- The default instance for tuples and lists
 instance (Ord a, Ord b) => Ord (Lexicographic a b) where
   (<=) :: Lexicographic a b -> Lexicographic a b -> Bool
-  (<=) = undefined
+  (<=) (Lexicographic (x,y)) (Lexicographic (s,t)) = x < s || (x == s && y<= t)
+
+
 
 newtype Fun a b = Fun {getFun :: a -> b}
 
 instance (Semigroup b) => Semigroup (Fun a b) where
   (<>) :: Fun a b -> Fun a b -> Fun a b
-  (<>) = undefined
+  Fun f <> Fun g  = Fun $ f <> g
 
 instance (Monoid b) => Monoid (Fun a b) where
   mempty :: Fun a b
@@ -38,7 +40,9 @@ newtype First a = First {getFirst :: Maybe a}
 
 instance Semigroup (First a) where
   (<>) :: First a -> First a -> First a
-  (<>) = undefined
+  Nothing <> x = x
+  x <> Nothing = x
+  Just x <> Just y = Just $ x <> y
 
 instance Monoid (First a) where
   mempty :: First a
