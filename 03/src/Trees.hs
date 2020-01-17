@@ -33,11 +33,8 @@ data BotTop a = Bot | Val a | Top
   deriving (Show, Eq, Ord)
 
 between :: Ord a => BotTop a -> BotTop a -> Tree a -> Bool
-between _ _ Empty = True
-between x Top (Node y l _) = between x (Val y) l
-between Bot x (Node y _ r) = between (Val y) x r  
-between (Val x) (Val y) (Node z l r) = (x <= z && z <= y) && (between (Val x) (Val z) l && between (Val z) (Val y) r) 
-between _ _ _ = False
+between low high Empty = low <= high
+between low high (Node x l r) = between low (Val x) l && between (Val x) high r
 
 findBST :: Ord a => a -> Tree a -> Bool
 findBST _ Empty = False
@@ -48,10 +45,11 @@ mapTree _ Empty = Empty
 mapTree f (Node x l r) = Node (f x) (mapTree f l) (mapTree f r) 
 
 foldTree :: Monoid a => Tree a -> a
-foldTree = undefined
+foldTree Empty = mempty
+foldTree (Node x l r) = foldTree l <> x <> foldTree r
 
 foldMapTree :: Monoid b => (a -> b) -> Tree a -> b
-foldMapTree = undefined
+foldMapTree f = undefined
 
 sumTree :: Num a => Tree a -> a
 sumTree = undefined

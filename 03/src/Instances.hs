@@ -33,20 +33,18 @@ instance (Semigroup b) => Semigroup (Fun a b) where
 
 instance (Monoid b) => Monoid (Fun a b) where
   mempty :: Fun a b
-  mempty = undefined
+  mempty = Fun (const mempty)
 
 newtype First a = First {getFirst :: Maybe a}
   deriving (Eq, Show)
 
 instance Semigroup (First a) where
   (<>) :: First a -> First a -> First a
-  Nothing <> x = x
-  x <> Nothing = x
-  Just x <> Just y = Just $ x <> y
+  (<>) = undefined
 
 instance Monoid (First a) where
   mempty :: First a
-  mempty = undefined
+  mempty = First Nothing
 
 newtype Last a = Last {getLast :: Maybe a}
   deriving (Eq, Show)
