@@ -14,35 +14,42 @@ data Tree a
 
 instance Eq a => Eq (Tree a) where
   (==) :: Tree a -> Tree a -> Bool
-  (==) = undefined
+  Empty == Empty = True
+  Node x l r == Node y ll rr = l == ll && x == y && r == rr  
+  _ == _ = False
 
 insertOrdered :: Ord a => a -> Tree a -> Tree a
-insertOrdered = undefined
+insertOrdered x Empty = Node x Empty Empty
+insertOrdered x (Node y l r) = if x <= y then Node y (insertOrdered x l) r else Node y l (insertOrdered x r) 
 
 listToBST :: Ord a => [a] -> Tree a
-listToBST = undefined
+listToBST = foldr insertOrdered Empty 
 
 isBST :: Ord a => Tree a -> Bool
-isBST = undefined
+isBST = between Bot Top 
 
 -- idea for implementing isBST - delete if you don't want it
 data BotTop a = Bot | Val a | Top
   deriving (Show, Eq, Ord)
 
 between :: Ord a => BotTop a -> BotTop a -> Tree a -> Bool
-between = undefined
+between low high Empty = low <= high
+between low high (Node x l r) = between low (Val x) l && between (Val x) high r
 
 findBST :: Ord a => a -> Tree a -> Bool
-findBST = undefined
+findBST _ Empty = False
+findBST x (Node y l r) = (x == y) || (findBST x l || findBST x r) 
 
 mapTree :: (a -> b) -> Tree a -> Tree b
-mapTree = undefined
+mapTree _ Empty = Empty
+mapTree f (Node x l r) = Node (f x) (mapTree f l) (mapTree f r) 
 
 foldTree :: Monoid a => Tree a -> a
-foldTree = undefined
+foldTree Empty = mempty
+foldTree (Node x l r) = foldTree l <> x <> foldTree r
 
 foldMapTree :: Monoid b => (a -> b) -> Tree a -> b
-foldMapTree = undefined
+foldMapTree f = undefined
 
 sumTree :: Num a => Tree a -> a
 sumTree = undefined
