@@ -17,43 +17,80 @@
 ; the provide "exports" these functions
 
 ; 00.
-(define (all? p? xs) void)
+(define (all? p? xs)
+  (foldr (lambda(x y) (and x y)) #t (map p? xs)))
 
 ; 01.
-(define (any? p? xs) void)
+(define (any? p? xs)
+  (not (null? (filter p? xs))))
+
 
 ; 02.
-(define (concat xss) void)
+(define (concat xss)
+  (foldr append '() xss))
 
 ; 03.
-(define (rows xss) void)
+(define (rows xss) xss)
 
 ; 04.
-(define (cols xss) void)
+(define (first-lst xss) (map car xss))
+
+(define (rem-lst xss) (map cdr xss))
+
+(define (cols xss)
+  (if(= 1 (length (car xss)))
+     (cons (first-lst xss) '())
+     (cons (first-lst xss) (cols (rem-lst xss)))))
 
 ; 05.
-(define (matrix-ref xss i j) void)
+(define (matrix-ref xss i j)
+  (list-ref (list-ref xss i) j))
 
 ; 06.
-(define (set xs i x) void)
+(define (set xs i x)
+  (if (null? xs)
+      '()
+      (cons (if (= i 0) x (car xs))
+            (set (cdr xs) (- i 1) x))))
 
 ; 07.
-(define (place xss i j x) void)
-
+(define (place xss i j x)
+  (set xss i (set (list-ref xss i) j x)))
+ 
 ; 08.
-(define (diag xss) void)
+(define (frst-el xss) (car (car xss)))
 
+(define (rem-mtrx xss) (map cdr (cdr xss)))
+
+(define (diag xss)
+  (if (= 1 (length xss))
+      (cons (frst-el xss) '())
+      (cons (frst-el xss)
+            (diag (rem-mtrx xss)))))
 ; 09.
-(define (diags xss) void)
+(define (flip xss)
+  (if (null? xss)
+      '()
+      (cons (reverse (car xss)) (flip (cdr xss)))))
+
+(define (diags xss)
+  (list (diag xss) (diag (flip xss))))
 
 ; 10.
-(define (map-matrix f xss) void)
+(define (map-matrix f xss)
+  (map (lambda (x) (map f x)) xss))
 
 ; 11.
-(define (filter-matrix p? xss) void)
+(define (filter-matrix p? xss)
+  (map (lambda (x) (filter p? x)) xss))
 
 ; 12.
-(define (zip-with f xs ys) void)
-
+(define (zip-with f xs ys)
+  (if (or (null? xs) (null? ys))
+        '()
+        (cons (f (car xs) (car ys))
+              (zip-with f (cdr xs) (cdr ys)))))
+      
 ; 13.
-(define (zip-matrix xss yss) void)
+(define (zip-matrix xss yss)
+  (map (lambda (x y) (zip-with cons x y)) xss yss))

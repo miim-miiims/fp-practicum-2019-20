@@ -8,12 +8,33 @@
 
 (define (id x) x)
 
-; winner implementation that only detects draws right now.
-; Put your own implementation here!
-(define (winner b)
-  (if (andmap (lambda (xs) (andmap id xs)) b)
-      "D"
-      #f))
+(define (x? x) (equal? x "X"))
+
+(define (o? o) (equal? o "O"))
+
+(define (f? f) (equal? f #f))
+
+(define (t? t) (equal? t #t))
+
+(define (win-diag? f xss)
+  (or (all? f (car (diags xss)))
+      (all? f (car (cdr (diags xss))))))
+
+(define (win-rows-cols? f g xss)
+  (any? t? (map (lambda (x) (all? f x)) (g xss))))
+  
+
+(define (win? x xss)
+  (or (win-diag? x xss)
+      (win-rows-cols? x rows xss)
+      (win-rows-cols? x cols xss)))
+  
+
+(define (winner xss)
+  (cond ((win? x? xss) "X")
+        ((win? o? xss) "O")
+        ((andmap (lambda (xs) (andmap id xs)) xss) "D")
+        (else #f)))
 
 ; "Dumb" "AI", plays the "next" free spot, going left-to-right, top-to-bottom.
 ; Put your own implementation here!
